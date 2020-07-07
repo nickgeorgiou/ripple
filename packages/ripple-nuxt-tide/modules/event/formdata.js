@@ -1,11 +1,9 @@
 export default {
-  getFormData: async setFilterOptions => {
-    const eventCategoryValues = await setFilterOptions({
-      fieldName: 'field_event_category_name'
-    })
-    const eventNameValues = await setFilterOptions({
-      fieldName: 'field_event_details_event_requirements_name'
-    })
+    getFormData: async (setFilterOptionsv2, searchConfig) => {
+      const eventCategoryValues = await setFilterOptionsv2({
+        type: 'term',
+        fields: ['field_event_category_name'],
+      }, searchConfig, this);
     return {
       title: "What's on in Victoria",
       searchPlaceholder: 'Search by keyword or location',
@@ -18,8 +16,6 @@ export default {
           // Multi-value fields should always be an array.
           field_event_category_name: [],
           field_event_date_end_value: '',
-          location: '',
-          field_event_details_event_requirements_name: []
         },
         schema: {
           groups: [
@@ -37,23 +33,6 @@ export default {
                     type: 'term',
                     operator: ''
                   }
-                },
-                {
-                  type: 'input',
-                  inputType: 'text',
-                  maxlength: 50,
-                  styleClasses: ['form-group--col-two', 'rpl-event-filter--location'],
-                  label: 'Location',
-                  model: 'location',
-                  placeholder: 'Start typing suburb or postcode...',
-                  filter: {
-                    type: 'multiMatch',
-                    operator: '',
-                    fields: [
-                      'field_event_details_event_locality',
-                      'field_event_details_event_postal_code'
-                    ]
-                  }
                 }
               ]
             },
@@ -69,19 +48,6 @@ export default {
                   filter: {
                     type: 'date',
                     operator: 'gte'
-                  }
-                },
-                {
-                  type: 'rplchecklist',
-                  label: 'Event requirements',
-                  styleClasses: ['form-group--col-two', 'rpl-event-filter--requirements'],
-                  model: 'field_event_details_event_requirements_name',
-                  // TODO: There are no values for this field how can we programmactically hide a field in this instance.
-                  values: eventNameValues,
-                  placeholder: 'Please select',
-                  filter: {
-                    type: 'term',
-                    operator: ''
                   }
                 }
               ]

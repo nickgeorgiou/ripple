@@ -57,14 +57,14 @@ export default {
     RplCol
   },
   mixins: [searchMixin],
-  async asyncData ({ app, route }) {
-    const tideSearch = getSearch(app)
-    const searchForm = await formData.getFormData(tideSearch.setFilterOptions)
-    return {
-      sidebar: false,
-      breadcrumbs: getBreadcrumbs(route.path, searchForm.title, null),
-      searchComponent: 'RplCardEvent',
-      searchForm,
+  async asyncData({ app, route }) {
+    const currentSiteOnly = true;
+    const tideSearch = getSearch(app);
+    // const searchForm = await formData.getFormData(tideSearch.setFilterOptions, {
+    //   currentSiteOnly: currentSiteOnly,
+    //   siteID: app.store.state.tideSite.siteId
+    // });
+    const searchConfig = {
       searchOptions: {
         currentSiteOnly: true,
         defaultHits: false,
@@ -91,10 +91,24 @@ export default {
           'url'
         ]
       },
-      sort: { field: 'field_event_date_end_value', order: 'asc' },
-      docType: 'event',
-      type: 'events'
-    }
+      sort: { field: "field_event_date_end_value", order: "asc" },
+      docType: "event",
+      type: "events"
+    };
+    const searchForm = await formData.getFormData(
+      tideSearch.setFilterOptionsv2,
+      searchConfig
+    );
+    return {
+      sidebar: false,
+      breadcrumbs: getBreadcrumbs(route.path, searchForm.title, null),
+      searchComponent: "RplCardEvent",
+      searchForm,
+      searchOptions: searchConfig.searchOptions,
+      sort: searchConfig.sort,
+      docType: searchConfig.docType,
+      type: searchConfig.type
+    };
   },
   methods: {
     getComputedFilters () {

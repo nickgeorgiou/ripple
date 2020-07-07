@@ -160,6 +160,42 @@ export default (config, router, site) => ({
 
     return _fields
   },
+  /**
+   * An alternative to the existing method.
+   * Utilises standard Search to build and perform the query.
+   * 
+   * TODO: Reduce properties in search config. This will allow for less modifications 
+   * to `event/search.vue` and `formdata.js`
+   * @param {Object} fieldMap 
+   * @param {Object} searchConfig 
+   */
+  setFilterOptionsv2: async function (fieldMap = {}, searchConfig) {
+    // const searchFunc = tideSearch.search
+    const options = {
+      currentSiteOnly: searchConfig.searchOptions.currentSiteOnly,
+      defaultHits: false,
+      responseSize: 0,
+      qFields: [],
+      sFields: [],
+      filterFromURI: []
+    }
+    const queryString = null
+    const page = 0
+    const filters = fieldMap
+    const filterFields = {}
+    const docType = searchConfig.docType
+    const sort = searchConfig.sort
+    // Something is wrong with the context of `this` when the func is called from the Vue component via getFormData.
+    // With this call to search returning
+    // `Cannot find instance of search on undefined`
+    // If we can fix that we will already have the site(from the parameters passed to this component) and we
+    // can then check the setting of `currentSiteOnly` without rewriting the whole form.
+    console.log(this)
+    debugger
+    const filterOptions = this.search(options, queryString, page, filters, filterFields, docType, sort)
+    // const filterOptions = []
+    return filterOptions
+  },
   setFilterOptions: async function (fieldMap = {}, index = config.index) {
     const client = await service.getClient(config)
     return service.api.getUniqueVals(client, fieldMap, index)
