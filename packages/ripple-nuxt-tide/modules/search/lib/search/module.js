@@ -7,7 +7,7 @@ let i = 0
 const debug = function (searchLog) {
   let logging = false
   if ((process.server || process.env.NODE_ENV === 'development') &&
-      searchLog === 'trace') {
+    searchLog === 'trace') {
     logging = true
   }
   return logging
@@ -163,11 +163,11 @@ export default (config, router, site) => ({
   /**
    * An alternative to the existing method.
    * Utilises standard Search to build and perform the query.
-   * 
-   * TODO: Reduce properties in search config. This will allow for less modifications 
+   *
+   * TODO: Reduce properties in search config. This will allow for less modifications
    * to `event/search.vue` and `formdata.js`
-   * @param {Object} fieldMap 
-   * @param {Object} searchConfig 
+   * @param {Object} fieldMap
+   * @param {Object} searchConfig
    */
   setFilterOptionsv2: async function (fieldMap = {}, searchConfig) {
     // const searchFunc = tideSearch.search
