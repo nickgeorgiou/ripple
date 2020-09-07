@@ -28,6 +28,10 @@ export default {
     'plugins': { type: Array },
     'options': { type: Object }
   },
+  mounted () {
+    console.log('pluginsss', this.html)
+    console.log('dataaa', this.getTemplate)
+  },
   computed: {
     getTemplate () {
       // Run our transpile to turn html into vue template.
@@ -208,7 +212,6 @@ $responsive-iframe-padding-top: $rpl-space-4 !default;
       @include rpl_typography_ruleset($quotation-author-ruleset);
       color: $quotation-author-color;
       font-style: normal;
-      text-transform: uppercase;
     }
   }
 
