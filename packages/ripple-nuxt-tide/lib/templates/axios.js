@@ -1,6 +1,6 @@
 import { logger } from '@dpc-sdp/ripple-nuxt-tide/lib/core'
 
-export default function ({ $axios, app, res }) {
+export default function ({ $axios, app, res, route }) {
 
   $axios.onRequest(config => {
     // Log all axios' requests
@@ -28,11 +28,10 @@ export default function ({ $axios, app, res }) {
 
     if (code === 401) {
       // Existing token likely failing to Authenticate.
-      if (app.$auth && app.$auth.loggedIn) {
-      // Clear token and redirect to initial URL.
+      if (app.$tide.isModuleEnabled('preview') && app.$auth && app.$auth.loggedIn) {
+        // Clear token and redirect to initial URL.
         app.$auth.reset()
-        // TODO - Reload the page. Something like:
-        // app.router.replace({ path: app.router.currentRoute.fullPath })
+        app.router.replace({ path: '/oauth/redirect', query: { destination: route.path } })
       }
     }
 

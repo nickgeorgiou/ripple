@@ -51,6 +51,11 @@ module.exports = function () {
       name: 'loginsuccess',
       path: redirect.home,
       component: resolve(__dirname, 'pages', 'Success.vue')
+    },
+    {
+      name: 'redirect',
+      path: '/oauth/redirect',
+      component: resolve(__dirname, 'pages', 'Redirect.vue')
     })
   })
 }
