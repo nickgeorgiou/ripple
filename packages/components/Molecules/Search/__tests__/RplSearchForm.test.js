@@ -3,8 +3,11 @@ import SearchForm from '../SearchForm'
 
 describe('SearchForm', () => {
   it('emits search event with a value when submitting the form', () => {
-    const wrapper = shallowMount(SearchForm)
-    wrapper.setProps({ allowBlank: false })
+    const wrapper = shallowMount(SearchForm, {
+      propsData: {
+        allowBlank: false
+      }
+    })
     wrapper.setData({ searchInput: 'test keyword' })
 
     wrapper.vm.submitSearch()
@@ -28,20 +31,27 @@ describe('SearchForm', () => {
   })
 
   it('tests searchFormClass to return empty array when there is no theme assigned', () => {
-    const wrapper = shallowMount(SearchForm)
+    const wrapper = shallowMount(SearchForm, {
+      propsData: {
+        theme: ''
+      }
+    })
 
-    wrapper.setProps({ theme: '' })
     expect(wrapper.vm.searchFormClass).toEqual([])
   })
 
   it('adds classes to form when a valid theme is assigned', () => {
-    const wrapper = shallowMount(SearchForm)
+    const wrapper = shallowMount(SearchForm, {
+      propsData: {
+        theme: 'solid'
+      }
+    })
 
     wrapper.setProps({ theme: 'solid' })
     expect(wrapper.vm.searchFormClass).toEqual(['rpl-search-form--solid'])
   })
 
-  it('returns total number of form filters correctly', () => {
+  it('returns total number of form filters correctly', async () => {
     const wrapper = shallowMount(SearchForm, {
       propsData: {
         filterForm: {}
@@ -50,7 +60,7 @@ describe('SearchForm', () => {
 
     expect(wrapper.vm.filterCount).toEqual(0)
 
-    wrapper.setProps({
+    await wrapper.setProps({
       filterForm: {
         model: {
           testOne: 'test',
