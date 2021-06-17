@@ -23,6 +23,9 @@ export default {
   components: {
     RplForm
   },
+  props: {
+    siteSectionName: String
+  },
   mixins: [webform],
   data () {
     return {
@@ -36,6 +39,7 @@ export default {
 
         model: {
           url: '',
+          site_section_name: '',
           was_this_page_helpful: null,
           comments: '',
           honeypot: ''
@@ -49,6 +53,11 @@ export default {
                   type: 'input',
                   inputType: 'hidden',
                   model: 'url'
+                },
+                {
+                  type: 'input',
+                  inputType: 'hidden',
+                  model: 'site_section_name'
                 },
                 {
                   type: 'radios',
@@ -126,6 +135,8 @@ export default {
       // Give the full url because it is multiple sites system
       this.formData.model.url = window.location.href
 
+      // Pass the site section name to the hidden field.
+      this.formData.model.site_section_name = this.siteSectionName
       const formData = this.formData.model
       const formId = this.formData.tideId
 
@@ -250,7 +261,11 @@ $app-content-text-color: rpl-color('dark_neutral') !default;
   }
 
   .app-button--cancel {
-    background-color: rpl-color('danger');
+    background-color: $rpl-button-danger-background-color;
+  }
+
+  .app-button--cancel:hover {
+    background-color: $rpl-button-danger-hover-background-color;
   }
 
   .tide-tell-me-your-email {

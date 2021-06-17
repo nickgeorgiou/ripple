@@ -49,15 +49,14 @@ export default {
     ['@nuxtjs/robots', {
       UserAgent: '*',
       Disallow: '/'
-    }]
+    }],
+    '@nuxtjs/gtm'
   ],
   /*
   ** Build
   * https://nuxtjs.org/api/configuration-build/
   */
   build: {
-    extractCSS: { ignoreOrder: true },
-
     extend (config, { isDev, isClient }) {
       if (isDev) {
         // For debugging in dev mode
@@ -99,6 +98,15 @@ export default {
       ]
     }
   },
+  gtm: {
+    // Enable below two lines to debug in dev mode
+    // enabled: true,
+    // debug: true,
+    id: process.env.GTM_ID,
+    pageTracking: true,
+    pageViewEventName: 'routeChange',
+    noscript: false
+  },
   /*
   ** styleResources
   * Override the path to the theme customisation scss
@@ -125,7 +133,7 @@ export default {
       username: process.env.CONTENT_API_AUTH_USER,
       password: process.env.CONTENT_API_AUTH_PASS
     },
-    site: 4,
+    site: '4',
     // Tide submodules, 1 for enable, 0 for disable.
     modules: {
       site: 1,
@@ -145,12 +153,8 @@ export default {
       webform: 1,
       search: 1,
       authenticatedContent: 1,
-      alert: 1,
-      gtm: 1
-    },
-    gtm: {
-      // Set Google Tag Manager ID here
-      id: process.env.GTM_ID
+      preview: 1,
+      alert: 1
     },
     search: {
       service: process.env.SEARCH_SERVICE,
@@ -162,6 +166,14 @@ export default {
         password: process.env.SEARCH_AUTH_PASSWORD
       },
       loadOnDemand: 1 // 0 for previous load mode. If you have a custom search page before Ripple v1.5.7, you need small change your code to turn on this. A example: https://github.com/dpc-sdp/ripple/pull/630/files#diff-c797d3457e8f4ca26b5707a65bc76189R37
+    },
+    /*
+     * This is the V2 API - See @dpc-sdp/ripple-tide-search-api for details
+    */
+    searchApi: {
+      apiBase: 'search-api',
+      apiVersion: 'v2',
+      cacheAge: 30
     },
     cachePurgePattern: []
   }

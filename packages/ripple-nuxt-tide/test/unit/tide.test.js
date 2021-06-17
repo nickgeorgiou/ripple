@@ -110,6 +110,87 @@ describe('tide helpers', () => {
     expect(metatag2).toEqual({})
   })
 
+  test('should able to get header config', () => {
+    const headData = {
+      langcode: 'en',
+      title: 'Test title',
+      description: 'Test description',
+      url: 'https://www.vic.gov.au',
+      image: 'https://www.vic.gov.au/Melbourne-tram.jpg',
+      imageAlt: 'Demo: Melbourne tram',
+      imageTwitter: 'https://www.vic.gov.au/Melbourne-tram-Twitter.jpg',
+      imageTwitterAlt: 'Demo: Twitter Melbourne tram',
+      siteSectionName: '',
+      pageType: 'landing_page',
+      robotsMeta: 'noindex'
+    }
+
+    const result = {
+      htmlAttrs: { lang: 'en' },
+      title: 'Test title',
+      meta: [
+        {
+          name: 'description',
+          hid: 'description',
+          content: 'Test description'
+        },
+        { property: 'og:title', hid: 'og:title', content: 'Test title' },
+        {
+          property: 'og:description',
+          hid: 'og:description',
+          content: 'Test description'
+        },
+        { property: 'og:type', hid: 'og:type', content: 'website' },
+        {
+          property: 'og:url',
+          hid: 'og:url',
+          content: 'https://www.vic.gov.au'
+        },
+        {
+          property: 'og:image',
+          hid: 'og:image',
+          content: 'https://www.vic.gov.au/Melbourne-tram.jpg'
+        },
+        {
+          property: 'og:image:alt',
+          hid: 'og:image:alt',
+          content: 'Demo: Melbourne tram'
+        },
+        { name: 'twitter:card', hid: 'twitter:card', content: 'summary' },
+        {
+          name: 'twitter:site',
+          hid: 'twitter:site',
+          content: 'https://www.vic.gov.au'
+        },
+        {
+          name: 'twitter:title',
+          hid: 'twitter:title',
+          content: 'Test title'
+        },
+        {
+          name: 'twitter:description',
+          hid: 'twitter:description',
+          content: 'Test description'
+        },
+        {
+          name: 'twitter:image',
+          hid: 'twitter:image',
+          content: 'https://www.vic.gov.au/Melbourne-tram-Twitter.jpg'
+        },
+        {
+          name: 'twitter:image:alt',
+          hid: 'twitter:image:alt',
+          content: 'Demo: Twitter Melbourne tram'
+        },
+        { name: 'sitesection', content: '' },
+        { name: 'content-type', content: 'landing_page' },
+        { name: 'robots', content: 'noindex' }
+      ]
+    }
+    const headconfig = helper.getPageHeadConfig(headData)
+    expect(headconfig).toEqual(result)
+  })
+
   describe('pathToClass', () => {
     /* eslint-disable indent */
     test.each`
@@ -252,6 +333,38 @@ describe('tide', () => {
     expect.assertions(1)
     const data = await tideApi.getAllPaginatedData(response, false)
     expect(data).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
+  })
+
+  test('should handle paginated data response error', async () => {
+    mockAxios.$get = jest.fn((url) => {
+      switch (url) {
+        case '/api/v1/test/?p2':
+          return Promise.resolve({
+            'data': [4, 5, 6],
+            'links': {
+              'self': 'https://mockAPI/api/v1/test/?p2',
+              'next': 'https://mockAPI/api/v1/test/?p3',
+              'last': 'https://mockAPI/api/v1/test/?p3'
+            }
+          })
+
+        case '/api/v1/test/?p3' :
+          return Promise.reject(new Error('something bad happened'))
+      }
+    })
+
+    const response = {
+      'data': [1, 2, 3],
+      'links': {
+        'self': 'https://mockAPI/api/v1/test/?p1',
+        'next': 'https://mockAPI/api/v1/test/?p2',
+        'last': 'https://mockAPI/api/v1/test/?p3'
+      }
+    }
+
+    expect.assertions(1)
+    const data = await tideApi.getAllPaginatedData(response, false)
+    expect(data).toBeInstanceOf(Error)
   })
 
   test('should get tide module enabled status', () => {

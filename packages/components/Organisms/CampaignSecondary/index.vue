@@ -3,7 +3,7 @@
     <div class="rpl-campaign-secondary__row">
       <div v-if="image || video" class="rpl-campaign-secondary__left">
         <div class="rpl-campaign-secondary__content">
-          <img v-if="image" :src="image" alt="" class="rpl-campaign-secondary__image" />
+          <rpl-responsive-img v-if="image" class="rpl-campaign-secondary__image" v-bind="image" alt="" />
           <rpl-embedded-video v-if="!image && video" :variant="video.mediaLink ? 'link' : false" :src="video.src" :media-link="video.mediaLink" class="rpl-campaign-secondary__video" />
         </div>
       </div>
@@ -22,6 +22,7 @@
 import breakpoint from '@dpc-sdp/ripple-global/mixins/breakpoint'
 import RplButton from '@dpc-sdp/ripple-button'
 import RplEmbeddedVideo from '@dpc-sdp/ripple-embedded-video'
+import RplResponsiveImg from '@dpc-sdp/ripple-responsive-img'
 
 export default {
   name: 'RplCampaignSecondary',
@@ -31,11 +32,12 @@ export default {
     summary: String,
     link: Object,
     video: Object,
-    image: String
+    image: Object
   },
   components: {
     RplButton,
-    RplEmbeddedVideo
+    RplEmbeddedVideo,
+    RplResponsiveImg
   }
 }
 </script>
@@ -66,9 +68,16 @@ export default {
   $rpl-campaign-secondary-summary-margin-xs: $rpl-space-3 0 ($rpl-space * 5) !default;
   $rpl-campaign-secondary-summary-margin-s: ($rpl-space * 4) 0 ($rpl-space * 6) !default;
   $rpl-campaign-secondary-summary-margin-m: $rpl-space-3 0 ($rpl-space * 6) !default;
+  $rpl-campaign-secondary-summary-link-color: rpl-color('primary') !default;
   $rpl-campaign-primary-content-padding-xs: 0 $rpl-component-padding-xs !default;
   $rpl-campaign-secondary-content-padding-s: 0 !default;
   $rpl-campaign-secondary-border-radius: rem(4px);
+  $rpl-campaign-secondary-image-max-height: (
+    'xs': 422px,
+    's': 300px,
+    'l': 207px,
+    'xl': 180px,
+  ) !default;
 
   .rpl-campaign-secondary {
     position: relative;
@@ -127,6 +136,12 @@ export default {
       border-radius: $rpl-campaign-secondary-border-radius;
       display: block;
       width: 100%;
+
+      @each $bp, $val in $rpl-campaign-secondary-image-max-height {
+        @include rpl_breakpoint($bp) {
+          max-height: $val;
+        }
+      }
       @include rpl_breakpoint('s') {
         padding: $rpl-campaign-secondary-content-padding-s;
       }
@@ -157,6 +172,13 @@ export default {
       }
       @include rpl_breakpoint('m') {
         margin: $rpl-campaign-secondary-summary-margin-m;
+      }
+      a {
+        color: $rpl-campaign-secondary-summary-link-color;
+        text-decoration: none;
+        &:focus, &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

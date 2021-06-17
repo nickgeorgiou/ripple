@@ -13,53 +13,29 @@ module.exports = {
   include: {
     landingPage: [
       'field_whats_next',
-      'field_graphical_image',
       'field_graphical_image.field_media_image',
-      'field_bottom_graphical_image',
       'field_bottom_graphical_image.field_media_image',
-      'field_landing_page_hero_logo',
       'field_landing_page_hero_logo.field_media_image',
-      'field_landing_page_hero_image',
       'field_landing_page_hero_image.field_media_image',
       'field_landing_page_hero_banner',
-      'field_landing_page_c_primary',
-      'field_landing_page_c_primary.field_block_image',
       'field_landing_page_c_primary.field_block_image.field_media_image',
-      'field_landing_page_c_secondary',
-      'field_landing_page_c_secondary.field_block_image',
       'field_landing_page_c_secondary.field_block_image.field_media_image',
       'field_landing_page_c_secondary.field_block_embedded_video',
       'field_landing_page_key_journeys',
-      'field_landing_page_contact',
       'field_landing_page_contact.field_paragraph_phones',
       'field_landing_page_contact.field_paragraph_social_media',
       'field_landing_page_header',
-      'field_landing_page_component',
-      'field_landing_page_component.field_paragraph_media',
       'field_landing_page_component.field_paragraph_media.field_media_image',
       'field_landing_page_component.field_paragraph_topic',
-      'field_landing_page_component.field_timeline',
-      'field_landing_page_component.field_timeline.field_paragraph_media',
       'field_landing_page_component.field_timeline.field_paragraph_media.field_media_image',
       'field_landing_page_component.field_paragraph_accordion',
       'field_landing_page_component.field_paragraph_keydates',
-      'field_landing_page_component.field_paragraph_reference',
-      'field_landing_page_component.field_paragraph_reference.field_topic',
-      'field_landing_page_component.field_paragraph_reference.field_featured_image',
-      'field_landing_page_component.field_paragraph_reference.field_featured_image.field_media_image',
-      'field_landing_page_component.field_paragraph_media_gallery',
-      'field_landing_page_component.field_paragraph_media_gallery.field_gallery_media',
       'field_landing_page_component.field_paragraph_media_gallery.field_gallery_media.field_media_image',
-      'field_landing_page_component.field_paragraph_items',
-      'field_landing_page_component.field_paragraph_items.field_paragraph_reference',
       'field_landing_page_component.field_paragraph_items.field_paragraph_reference.field_event_details',
       'field_landing_page_component.field_paragraph_items.field_paragraph_reference.field_topic',
-      'field_landing_page_component.field_paragraph_items.field_paragraph_reference.field_featured_image',
       'field_landing_page_component.field_paragraph_items.field_paragraph_reference.field_featured_image.field_media_image',
       'field_landing_page_component.field_paragraph_items.field_paragraph_keydates',
-      'field_landing_page_component.field_paragraph_items.field_paragraph_media',
       'field_landing_page_component.field_paragraph_items.field_paragraph_media.field_media_image',
-      'field_landing_page_component.field_complex_image_media',
       'field_landing_page_component.field_complex_image_media.field_media_image'
     ]
   },
@@ -70,13 +46,22 @@ module.exports = {
         component: 'rpl-intro-banner',
         props: {
           'title': 'field_paragraph_title',
-          'introText': 'field_paragraph_summary',
+          'introText': ['field_paragraph_body', 'processed'],
+          'linkHeading': 'field_call_to_action_title',
           'links': {
             field: 'field_paragraph_links',
             filters: ['paragraphKeyJourneyLinks']
           },
           'showLinks': {
             value: true
+          },
+          'linksType': {
+            field: 'field_banner_display_type',
+            filters: ['introBannerLinkTypes']
+          },
+          'icon': {
+            field: 'field_banner_type',
+            filters: ['introBannerTypeToIcon']
           }
         },
         class: ['rpl-site-constrain--on-all']
@@ -166,7 +151,10 @@ module.exports = {
             ['field_paragraph_link', 'url'],
             ['field_paragraph_link', 'uri']
           ],
-          'image': ['field_paragraph_media', 'field_media_image', 'url']
+          'image': {
+            field: ['field_paragraph_media', 'field_media_image'],
+            filters: ['cardImage']
+          }
         }
       },
 
@@ -179,7 +167,10 @@ module.exports = {
             filters: ['autoCardSummary']
           },
           'url': ['field_paragraph_reference', 'path', 'url'],
-          'image': ['field_paragraph_reference', 'field_featured_image', 'field_media_image', 'url']
+          'image': {
+            field: ['field_paragraph_reference'],
+            filters: ['cardAutoImage']
+          }
         }
       },
 
@@ -220,8 +211,8 @@ module.exports = {
                 filters: ['paragraphCta']
               },
               'image': {
-                field: 'field_paragraph_media',
-                filters: ['paragraphCtaImage']
+                field: ['field_paragraph_media', 'field_media_image'],
+                filters: ['cardImage']
               }
             },
             class: {
@@ -243,17 +234,93 @@ module.exports = {
                 field: 'field_paragraph_cta',
                 filters: ['paragraphCta']
               },
-              'image': ['field_paragraph_media', 'field_media_image', 'url']
+              'image': {
+                field: ['field_paragraph_media', 'field_media_image'],
+                filters: ['cardImage']
+              }
             },
             cols: cardColsSetting
           }
         ]
       },
 
+      'paragraph--navigation_card': {
+        component: 'rpl-card-nav',
+        props: {
+          'title': [
+            ['field_paragraph_link', 'internal_node_fields', 'title'],
+            ['field_paragraph_title']
+          ],
+          'summary': [
+            ['field_paragraph_link', 'internal_node_fields', 'summary'],
+            ['field_paragraph_summary']
+          ],
+          'image': {
+            field: [
+              ['field_paragraph_link', 'image'],
+              ['field_paragraph_media', 'field_media_image']
+            ],
+            filters: ['cardImage']
+          },
+          'link': {
+            field: 'field_paragraph_link',
+            filters: ['paragraphLink']
+          },
+          'dateStart': ['field_paragraph_link', 'internal_node_fields', 'date', 'value'],
+          'dateEnd': ['field_paragraph_link', 'internal_node_fields', 'date', 'end_value'],
+          'contentType': ['field_paragraph_link', 'internal_node_fields', 'node_type'],
+          'topic': ['field_paragraph_link', 'internal_node_fields', 'topic'],
+          'authors': ['field_paragraph_link', 'internal_node_fields', 'publication_authors'],
+          'fvRecommendationStatus': ['field_paragraph_link', 'internal_node_fields', 'fv_recommendation_status'],
+          'inductionYear': ['field_paragraph_link', 'internal_node_fields', 'induction_year'],
+          'showMeta': 'field_customise',
+          'displayStyle': 'field_nav_card_display_style',
+          'isGrantOnGoing': ['field_paragraph_link', 'internal_node_fields', 'ongoing']
+        }
+      },
+
+      'paragraph--promotion_card': {
+        component: 'rpl-card-promo',
+        props: {
+          'title': [
+            ['field_paragraph_link', 'internal_node_fields', 'title'],
+            ['field_paragraph_title']
+          ],
+          'summary': [
+            ['field_paragraph_link', 'internal_node_fields', 'summary'],
+            ['field_paragraph_summary']
+          ],
+          'image': {
+            field: [
+              ['field_paragraph_link', 'image'],
+              ['field_paragraph_media', 'field_media_image']
+            ],
+            filters: ['cardImage']
+          },
+          'link': {
+            field: 'field_paragraph_link',
+            filters: ['paragraphLink']
+          },
+          'dateStart': ['field_paragraph_link', 'internal_node_fields', 'date', 'value'],
+          'dateEnd': ['field_paragraph_link', 'internal_node_fields', 'date', 'end_value'],
+          'topic': ['field_paragraph_link', 'internal_node_fields', 'topic'],
+          'contentType': ['field_paragraph_link', 'internal_node_fields', 'node_type'],
+          'fvRecommendationStatus': ['field_paragraph_link', 'internal_node_fields', 'fv_recommendation_status'],
+          'inductionYear': ['field_paragraph_link', 'internal_node_fields', 'induction_year'],
+          'showMeta': 'field_customise',
+          'displayStyle': 'field_promo_card_display_style',
+          'isGrantOnGoing': ['field_paragraph_link', 'internal_node_fields', 'ongoing']
+        },
+        cols: cardColsSetting
+      },
+
       'paragraph--card_event': {
         component: 'rpl-card-event',
         props: {
-          'image': ['field_paragraph_media', 'field_media_image', 'url'],
+          'image': {
+            field: ['field_paragraph_media', 'field_media_image'],
+            filters: ['cardImage']
+          },
           'dateStart': ['field_paragraph_date_range', 'value'],
           'dateEnd': ['field_paragraph_date_range', 'end_value'],
           'location': ['field_paragraph_location', 'locality'],
@@ -270,7 +337,10 @@ module.exports = {
       'paragraph--card_promotion': {
         component: 'rpl-card-promotion',
         props: {
-          'image': ['field_paragraph_media', 'field_media_image', 'url'],
+          'image': {
+            field: ['field_paragraph_media', 'field_media_image'],
+            filters: ['cardImage']
+          },
           'date': 'field_paragraph_date',
           'topic': ['field_paragraph_topic', 0, 'name'],
           'title': 'field_paragraph_title',
@@ -286,10 +356,10 @@ module.exports = {
       'paragraph--card_promotion_auto': {
         component: 'rpl-card-promotion',
         props: {
-          'image': [
-            ['field_paragraph_reference', 'field_featured_image', 'field_media_image', 'url'],
-            ['field_paragraph_reference', 'field_media_image', 'url']
-          ],
+          'image': {
+            field: ['field_paragraph_reference'],
+            filters: ['cardAutoImage']
+          },
           'date': [
             ['field_paragraph_reference', 'field_paragraph_date'],
             // News specific date field.
@@ -367,6 +437,41 @@ module.exports = {
           'image': {
             field: 'field_complex_image_media',
             filters: ['paragraphCtaImage']
+          }
+        }
+      },
+
+      'paragraph--automated_card_listing': {
+        component: 'automated-card-listing',
+        props: {
+          title: 'field_paragraph_title',
+          cardCtaText: 'field_paragraph_cta_text',
+          config: ['field_paragraph_auto_listing'],
+          ctaLink: {
+            field: 'field_paragraph_cta',
+            filters: ['paragraphCta']
+          }
+        },
+        childCols: cardColsSetting
+      },
+
+      'paragraph--form_embed_openforms': {
+        component: 'tide-open-form',
+        props: {
+          'formLink': ['field_form_link', 'uri']
+        }
+      },
+
+      'paragraph--data_table': {
+        component: 'rpl-data-table',
+        props: {
+          caption: ['field_data_table_content', 'caption'],
+          isRowOriented: ['field_table_orientation'],
+          isFirstRowHeader: ['field_first_row_table_header'],
+          isFirstColHeader: ['field_first_column_table_header'],
+          items: {
+            field: ['field_data_table_content', 'value'],
+            filters: ['dataTableStructure']
           }
         }
       }

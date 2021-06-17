@@ -1,9 +1,14 @@
-const path = require('path')
-
-const resolve = path.resolve
-
 // vue.config.js
 module.exports = {
+  // To use Ripple Markup or relevant components like Ripple Accordion
+  configureWebpack: {
+    resolve: {
+      alias: {
+        'vue$': 'vue/dist/vue.esm.js'
+      }
+    }
+  },
+
   // Put postcss config here for working with our Ripple monorepo(yarn workspace).
   css: {
     loaderOptions: {
@@ -29,20 +34,5 @@ module.exports = {
         })
         .end()
     })
-
-    // Add this to load Ripple svg icons
-    const svgRule = config.module.rule('svg')
-    const rippleIconPath = path.dirname(require.resolve('@dpc-sdp/ripple-icon/package.json'))
-    svgRule.uses.clear()
-    svgRule
-      .include
-        .add(resolve(__dirname, rippleIconPath))
-        .end()
-      .use('svg-sprite-loader')
-        .loader('svg-sprite-loader')
-        .end()
-      .use('svgo-loader')
-        .loader('svgo-loader')
-        .end()
   }
 }

@@ -1,4 +1,4 @@
-import { tide, Mapping } from '@dpc-sdp/ripple-nuxt-tide/lib/core'
+import { tide, Mapping, TideSearchApi } from '@dpc-sdp/ripple-nuxt-tide/lib/core'
 import { serverSetProperties } from '@dpc-sdp/ripple-nuxt-tide/modules/authenticated-content/lib/authenticate'
 
 export default ({ app, req, store , route }, inject) => {
@@ -15,6 +15,24 @@ export default ({ app, req, store , route }, inject) => {
   // -> this.$tide in store actions/mutations
   const tideService = tide(app.$axios, options.site, config)
   inject('tide', tideService)
+  const getBaseUrl = () => {
+    const apiRoot = options.searchApi ? `/${options.searchApi.apiBase}/${options.searchApi.apiVersion}` : '/search-api/v2/'
+
+    if (process.env.SEARCH_API_BASE_URL) {
+      return process.env.SEARCH_API_BASE_URL + apiRoot
+    }
+    if (req) {
+      return req.protocol + '://' + req.headers.host + apiRoot
+    } else if (typeof window !== 'undefined') {
+      return window.location.origin + apiRoot
+    }
+  }
+  if (options.searchApi) {
+    inject('tideSearchApi', new TideSearchApi({
+      client: app.$axios,
+      baseUrl: getBaseUrl()
+    }))
+  }
   inject('tideMapping', new Mapping(config, tideService))
 
   // Register Tide Vuex module
@@ -25,6 +43,7 @@ export default ({ app, req, store , route }, inject) => {
         host: null,
         protocol: null,
         currentUrl: null,
+        currentDomain: null,
         siteData: null,
         pageData: null,
         pageHead: null
@@ -38,6 +57,9 @@ export default ({ app, req, store , route }, inject) => {
         },
         setCurrentUrl (state, currentUrl) {
           state.currentUrl = currentUrl
+        },
+        setCurrentDomain (state, currentDomain) {
+          state.currentDomain = currentDomain
         },
         setSiteData (state, siteData) {
           state.siteData = siteData
@@ -71,12 +93,28 @@ export default ({ app, req, store , route }, inject) => {
         },
         async setSiteData ({ commit }, { requestId = null } = {}) {
           const headersConfig = { requestId }
-          const siteData = await app.$tide.getSiteData(headersConfig)
+          let siteData = await app.$tide.getSiteData(headersConfig)
           if (siteData instanceof Error) {
-            throw siteData
+            // If got a Nuxt auth session expire error, try again.
+            // As Nuxt auth should reset auth on error, retry should pass.
+            if (siteData.name === 'ExpiredAuthSessionError') {
+              siteData = await app.$tide.getSiteData(headersConfig)
+              if (siteData instanceof Error) {
+                throw siteData
+              }
+            } else {
+              throw siteData
+            }
           }
           siteData.lastFetched = Date.now()
           commit('setSiteData', siteData)
+
+          if (siteData.field_site_domains) {
+            // Current site domain should be the first one in site domains
+            const siteDomain = siteData.field_site_domains.valueOf().split('\r\n', 1)
+            commit('setCurrentDomain', siteDomain[0])
+          }
+
           if (config.modules.alert === 1) {
             if (siteData.site_alerts && siteData.site_alerts.length > 0) {
               await store.dispatch('tideAlerts/setAlerts', { alerts: siteData.site_alerts, siteSection: siteData.drupal_internal__tid })

@@ -1,5 +1,5 @@
 <template>
-  <rpl-card-content class="rpl-card-promotion" :image="image" :link="link">
+  <rpl-card-content class="rpl-card-promotion" :image="computedImg" :link="link">
     <div class="rpl-card-promotion__meta" v-if="date || topic">
       <div class="rpl-card-promotion__date" v-if="date">{{ formatDate(date) }}</div>
       <div class="rpl-card-promotion__tag" >{{ topic }}</div>
@@ -15,12 +15,13 @@
 import formatdate from '@dpc-sdp/ripple-global/mixins/formatdate'
 import cardtrimfield from './mixins/cardtrimfield'
 import RplCardContent from './CardContent.vue'
+import deprecate from '@dpc-sdp/ripple-global/mixins/deprecate'
 
 export default {
   name: 'RplCardPromotion',
-  mixins: [formatdate, cardtrimfield],
+  mixins: [formatdate, cardtrimfield, deprecate],
   props: {
-    image: String,
+    image: [String, Object],
     date: String,
     topic: String,
     title: String,
@@ -37,10 +38,18 @@ export default {
       trimFieldRefreshOnFonts: true
     }
   },
+  mounted () {
+    this.deprecatedWarn('"rpl-card-promotion" is deprecated, please import "rpl-card-promo" from @dpc-sdp/ripple-card-promo instead')
+  },
   methods: {
     getTrimFieldMaxHeightOffset: function (card) {
       const link = this.$el.querySelector('.rpl-card-content__link')
       return link ? (card.clientHeight - link.clientHeight) : card.clientHeight
+    }
+  },
+  computed: {
+    computedImg () {
+      return typeof this.image === 'string' ? { src: this.image } : this.image
     }
   }
 }

@@ -10,7 +10,8 @@ const configGroups = {
   core: 1,
   coreModule: 2,
   customRoot: 3,
-  customModule: 4
+  customModule: 4,
+  nodeModule: 5
 }
 
 // List of all configs
@@ -30,7 +31,19 @@ const customConfigs = {
     type: Array,
     groups: [
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
+    ]
+  },
+  searchTemplates: {
+    filename: 'tide.search-template',
+    type: Object,
+    merge: true,
+    groups: [
+      configGroups.customRoot,
+      configGroups.customModule,
+      configGroups.coreModule,
+      configGroups.nodeModule
     ]
   },
   extendFilters: {
@@ -38,7 +51,8 @@ const customConfigs = {
     type: Array,
     groups: [
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
     ]
   },
   moduleHook: {
@@ -46,7 +60,8 @@ const customConfigs = {
     type: Function,
     groups: [
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
     ]
   },
   pageTypes: {
@@ -55,7 +70,8 @@ const customConfigs = {
     groups: [
       configGroups.customRoot,
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
     ]
   },
   middleware: {
@@ -64,7 +80,8 @@ const customConfigs = {
     groups: [
       configGroups.customRoot,
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
     ]
   },
   dynamicComponents: {
@@ -73,7 +90,8 @@ const customConfigs = {
     groups: [
       configGroups.customRoot,
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
     ]
   },
   markupPlugins: {
@@ -82,7 +100,8 @@ const customConfigs = {
     groups: [
       configGroups.customRoot,
       configGroups.coreModule,
-      configGroups.customModule
+      configGroups.customModule,
+      configGroups.nodeModule
     ]
   }
 }
@@ -113,6 +132,16 @@ const getConfigPath = (group, item, moduleName = null) => {
       if (moduleName) {
         configPath = `${appRoot}/tide/modules/${moduleName}/`
         configFilePath = `${appDir}/tide/modules/${moduleName}/`
+      } else {
+        throw new Error('Missing module name.')
+      }
+      break
+    case configGroups.nodeModule:
+      if (moduleName) {
+        let nodeModulePath = require.resolve(`${moduleName}/README.md`)
+        nodeModulePath = nodeModulePath.replace('/README.md', '').replace(/.*\/node_modules\//, '')
+        configPath = `${appRoot}/node_modules/${nodeModulePath}/`
+        configFilePath = `${appDir}/node_modules/${nodeModulePath}/`
       } else {
         throw new Error('Missing module name.')
       }
@@ -168,7 +197,14 @@ const buildConfigs = (group, tideConfig, _this, moduleName = null) => {
             config.call(_this)
             break
           case Object:
-            tideConfig[configName] = config
+            if (configItem.merge) {
+              tideConfig[configName] = {
+                ...tideConfig[configName],
+                ...config
+              }
+            } else {
+              tideConfig[configName] = config
+            }
         }
       }
     }
@@ -190,13 +226,29 @@ const buildCoreModules = (tideConfig, _this) => {
 const buildCustomModules = (tideConfig, _this) => {
   const customModules = tideConfig.customConfig.modules
 
-  if (!(Array.isArray(customModules))) {
-    return
+  if (Array.isArray(customModules)) {
+    customModules.forEach(item => {
+      if (Array.isArray(item)) {
+        buildConfigs(configGroups.customModule, tideConfig, _this, item[0])
+      } else {
+        buildConfigs(configGroups.customModule, tideConfig, _this, item)
+      }
+    })
   }
+}
 
-  customModules.forEach(moduleName => {
-    buildConfigs(configGroups.customModule, tideConfig, _this, moduleName)
-  })
+const buildNodeModules = (tideConfig, _this) => {
+  const nodeModules = tideConfig.customConfig.nodeModules
+
+  if (Array.isArray(nodeModules)) {
+    nodeModules.forEach(item => {
+      if (Array.isArray(item)) {
+        buildConfigs(configGroups.nodeModule, tideConfig, _this, item[0])
+      } else {
+        buildConfigs(configGroups.nodeModule, tideConfig, _this, item)
+      }
+    })
+  }
 }
 
 const buildCustomRootConfig = (tideConfig, _this) => {
@@ -213,6 +265,8 @@ export const build = (tideConfig, _this) => {
   buildCustomRootConfig(tideConfig, _this)
   // Build custom modules
   buildCustomModules(tideConfig, _this)
+  // Build node modules
+  buildNodeModules(tideConfig, _this)
 
   // Merge configs for errorPage
   mergeIncludes()

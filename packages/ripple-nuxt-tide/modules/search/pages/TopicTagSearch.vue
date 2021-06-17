@@ -17,10 +17,6 @@
       :type="searchComponent"
     />
 
-    <template slot="belowContent">
-      <rpl-divider />
-      <component :is="contentRating" class="rpl-site-constrain--on-all"></component>
-    </template>
   </rpl-page-layout>
 </template>
 
@@ -184,7 +180,7 @@ export default {
       const site = this.$store.state.tide.siteData.drupal_internal__tid
       let date = source.changed ? source.changed[0] : source.created[0]
       return {
-        title: source.title[0],
+        title: source.title ? source.title[0] : '',
         link: this.getLink(source.url, site, source.field_node_primary_site, this.$store.state.tideSite.sitesDomainMap, { text: 'linkText', url: 'linkUrl' }),
         date: this.validDate(date) ? date : '',
         description: this.getDescription(source),

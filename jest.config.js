@@ -7,13 +7,14 @@ module.exports = {
   setupFiles: ['<rootDir>/.jest/register-context.js', 'jest-canvas-mock'],
   setupFilesAfterEnv: ['<rootDir>/.jest/moment.js'],
   transform: {
-    '^.+\\.stories\\.js$': '@storybook/addon-storyshots/injectFileName',
+    '^.+\\.mdx?$': '@storybook/addon-docs/jest-transform-mdx',
+    '^.+\\.stories\\.js|^.+\\.mdx?$': '@storybook/addon-storyshots/injectFileName',
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
     '.*\\.(vue)$': 'vue-jest',
     '^.+\\.md?$': 'markdown-loader-jest'
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@dpc-sdp*|ol|ol-ext|storybook-addon-vue-info|@storybook*)/)'
+    'node_modules/(?!(@dpc-sdp*|ol|ol-ext|@storybook*)/)'
   ],
   moduleNameMapper: {
     // @TODO storybook storyshots fails with MDX.

@@ -100,14 +100,14 @@ export default {
     getComputedFilters () {
       let filterValues = this.tideSearch.getFiltersValues(this.searchForm.filterForm)
       // Test date filter based on start / end fields.
+      if (filterValues.field_event_date_start_value) {
+        const setFilterDate = moment(filterValues.field_event_date_start_value.values)
+        filterValues.field_event_date_start_value.values = setFilterDate.startOf('day').toISOString()
+      }
+
       if (filterValues.field_event_date_end_value) {
         const setFilterDate = moment(filterValues.field_event_date_end_value.values)
         filterValues.field_event_date_end_value.values = setFilterDate.startOf('day').toISOString()
-        filterValues['field_event_date_start_value'] = {
-          operator: 'lte',
-          type: 'date',
-          values: setFilterDate.endOf('day').toISOString()
-        }
       } else {
         const vic = moment.tz.setDefault('Australia/Melbourne')
         const today = vic().startOf('day').toISOString()
@@ -125,10 +125,10 @@ export default {
         pSite = source.field_node_primary_site[0]
       }
       return {
-        title: source.title[0] || '',
-        dateStart: source.field_event_date_start_value[0] || '',
-        dateEnd: source.field_event_date_end_value[0] || '',
-        location: source.field_event_details_event_locality[0] || '',
+        title: source.title ? source.title[0] : '',
+        dateStart: source.field_event_date_start_value ? source.field_event_date_start_value[0] : '',
+        dateEnd: source.field_event_date_end_value ? source.field_event_date_end_value[0] : '',
+        location: source.field_event_details_event_locality ? source.field_event_details_event_locality[0] : '',
         summary: typeof source.field_landing_page_summary !== 'undefined' ? this.truncateText(source.field_landing_page_summary[0]) : this.truncateText(source.body[0]),
         image: source.field_media_image_absolute_path ? source.field_media_image_absolute_path[0] : '',
         link: source.url && this.getLink(source.url, this.$store.state.tide.siteData.drupal_internal__tid, pSite, this.$store.state.tideSite.sitesDomainMap, { text: 'text', url: 'url' }, 'See event details')

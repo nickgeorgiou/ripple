@@ -8,10 +8,10 @@ If you are using `@dpc-sdp/ripple-nuxt-tide`, you don't need any setup as `@dpc-
 has built in setup already. For setup `@dpc-sdp/ripple-nuxt-tide`,
 go to [packages/ripple-nuxt-tide doc](/packages/ripple-nuxt-tide/README.md).
 
-### Option 1. Using `create-nuxt-app` (Working in progress)
+### Option 1. Using `create-nuxt-app` (Work in progress)
 
 To get started quickly, we has created scaffolding tool [create-ripple-app](/packages/create-ripple-app).
-But this setup option is working in progress at this stage and will be available
+But this setup option is a work in progress at this stage and will be available
 soon.
 
 ### Option 2. Adding to existing Nuxt project
@@ -19,26 +19,26 @@ soon.
 Without using `create-nuxt-app`, you can setup it in your existing Nuxt site with
 following steps.
 
-#### Add `@dpc-sdp/ripple-nuxt-ripple` dependency using yarn or npm to your project
+#### Add `@dpc-sdp/ripple-nuxt-ui` dependency using yarn or npm to your project
 
 Install with yarn
 
 ```shell
-yarn add @dpc-sdp/ripple-nuxt-ripple
+yarn add @dpc-sdp/ripple-nuxt-ui
 ```
 
 Install with npm
 
 ```shell
-npm install add @dpc-sdp/ripple-nuxt-ripple
+npm install add @dpc-sdp/ripple-nuxt-ui
 ```
 
-#### Add `@dpc-sdp/ripple-nuxt-ripple` to `modules` section of `nuxt.config.js`
+#### Add `@dpc-sdp/ripple-nuxt-ui` to `modules` section of `nuxt.config.js`
 
 ```js
 {
   modules: [
-    'dpc-sdp/ripple-nuxt-ripple'
+    '@dpc-sdp/ripple-nuxt-ui'
   ],
 
   ripple: {

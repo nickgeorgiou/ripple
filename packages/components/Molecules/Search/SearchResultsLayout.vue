@@ -27,11 +27,11 @@
         </slot>
       </rpl-row>
       <div v-if="searchResults.length === 0 && !loading" class="rpl-search-results-layout__no-results-msg">
-        <slot name="noresults"><p>Sorry! We couldn't find any matches</p></slot>
+        <slot name="noresults"><p> {{ noResultsMsg }} </p></slot>
       </div>
       <rpl-row row-gutter v-if="pager">
         <slot name="pagination">
-          <rpl-col cols="full" :colsBp="{ m: 6, l: 4, xxxl: 3 }">
+          <rpl-col cols="full" :colsBp="pagerColsBp">
             <rpl-pagination
               :totalSteps="pager.totalSteps"
               :initialStep="pager.initialStep"
@@ -87,7 +87,17 @@ export default {
       default: 'Search isn\'t working right now, please try again later.'
     },
     count: Number,
-    loading: Boolean
+    noResultsMsg: {
+      type: String,
+      default: 'Sorry! We couldn\'t find any matches'
+    },
+    loading: Boolean,
+    pagerColsBp: {
+      type: Object,
+      default () {
+        return { m: 6, l: 4, xxxl: 3 }
+      }
+    }
   },
   computed: {
     range () {

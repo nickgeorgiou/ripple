@@ -9,6 +9,7 @@
       'rpl-button--disabled': disabled
     }"
   >
+    <!-- @slot Button label -->
     <slot></slot>
   </rpl-link>
   <button
@@ -21,6 +22,7 @@
       'rpl-button--disabled': disabled
     }"
   >
+    <!-- @slot Button label -->
     <slot></slot>
   </button>
 </template>
@@ -31,8 +33,17 @@ import RplLink from '@dpc-sdp/ripple-link'
 export default {
   name: 'RplButton',
   props: {
+    /**
+     * The URL destination of when button is clicked.
+     */
     href: String,
+    /**
+     * Button theme or colour styling e.g. primary, secondary.
+     */
     theme: String,
+    /**
+     * Flag to enable/disable the button.
+     */
     disabled: Boolean
   },
   components: {

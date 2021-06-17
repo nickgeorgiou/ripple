@@ -44,15 +44,14 @@ export default {
   modules: [
     // https://www.npmjs.com/package/@dpc-sdp/ripple-nuxt-tide
     '@dpc-sdp/ripple-nuxt-tide',
-    ['@nuxtjs/robots', robots]
+    ['@nuxtjs/robots', robots],
+    '@nuxtjs/gtm'
   ],
   /*
   ** Build
   * https://nuxtjs.org/api/configuration-build/
   */
   build: {
-    extractCSS: { ignoreOrder: true },
-
     extend (config, { isDev, isClient }) {
       const webpack = require('webpack')
       const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
@@ -79,6 +78,12 @@ export default {
   css: [
     '@/assets/_custom.scss'
   ],
+  gtm: {
+    id: process.env.GTM_ID,
+    pageTracking: true,
+    pageViewEventName: 'routeChange',
+    noscript: false
+  },
   tide: {
     baseUrl: process.env.CONTENT_API_SERVER,
     auth: {
@@ -100,12 +105,8 @@ export default {
       <%}%><% if (search === 'yes') { %>search: 1,
       <%}%><% if (authenticatedContent === 'yes') { %>authenticatedContent: 1,
       <%}%><% if (alert === 'yes') { %>alert: 1,
-      <%}%><% if (gtm === 'yes') { %>gtm: 1,
+      <%}%><% if (preview === 'yes') { %>preivew: 1,
       <%}%><% if (site === 'yes') { %>site: 1<%}%>
-    },
-    gtm: {
-      // Set Google Tag Manager ID here
-      id: process.env.GTM_ID
     },
     search: {
       service: process.env.SEARCH_SERVICE,

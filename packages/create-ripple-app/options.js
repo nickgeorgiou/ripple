@@ -41,6 +41,11 @@ module.exports = {
     message: 'Enter auth password',
     default: ''
   },
+  oauthclientid: {
+    name: 'oauthclientid',
+    message: 'Enter backend content OAuth client id',
+    default: ``
+  },
   gtmtoken: {
     name: 'gtmtoken',
     message: 'Enter Google Tag Manager Token',
@@ -102,7 +107,7 @@ module.exports = {
     name: 'searchurl',
     type: 'string',
     message: 'Elasticsearch URL',
-    default: 'elasticdev.sdp.vic.gov.au',
+    default: 'elastic.sdp2.sdp.vic.gov.au',
     store: true
   },
   searchindex: {

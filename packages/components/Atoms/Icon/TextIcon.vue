@@ -1,12 +1,12 @@
 <template>
   <span v-if="text && symbol && placement === 'before'">
-    <span v-if="textWordCount > 1" class="rpl-text-icon__group"><rpl-icon v-bind="iconProps" />{{ textFirstWord }}</span>
+    <span v-if="textWordCount > 1" class="rpl-text-icon__group"><rpl-icon v-bind="iconProps" />{{ textFirstWord }} </span>
     <span v-if="textWordCount > 1">{{ textWithoutFirstWord }}</span>
     <span v-else class="rpl-text-icon__group"><rpl-icon v-bind="iconProps" />{{ text }}</span>
   </span>
   <span v-else-if="text && symbol && placement === 'after'">
     <span v-if="textWordCount > 1">{{ textWithoutLastWord }}</span>
-    <span v-if="textWordCount > 1" class="rpl-text-icon__group">{{ textLastWord }}<rpl-icon v-bind="iconProps" /></span>
+    <span v-if="textWordCount > 1" class="rpl-text-icon__group"> {{ textLastWord }}<rpl-icon v-bind="iconProps" /></span>
     <span v-else class="rpl-text-icon__group">{{ text }}<rpl-icon v-bind="iconProps" /></span>
   </span>
   <span v-else-if="text">{{ text }}</span>
@@ -15,6 +15,10 @@
 <script>
 import RplIcon from './Icon.vue'
 
+/**
+ * Text Icon allows user to display text with an icon that can be placed before or after.
+ * This is commonly used in an anchor <a> tag where the icon helps represents the action of the text.
+ */
 export default {
   name: 'RplTextIcon',
   props: {
@@ -28,20 +32,29 @@ export default {
     RplIcon
   },
   computed: {
+    trimmedText: function () {
+      return this.text.trim()
+    },
+    textArray () {
+      return this.trimmedText.split(' ')
+    },
     textWordCount: function () {
-      return (this.text.match(/[.*]|[^ \r\n]+/gi) || []).length
+      return this.textArray.length
     },
     textWithoutLastWord: function () {
-      return this.text.substr(0, this.text.lastIndexOf(' '))
+      const textWithoutLastWord = this.textArray.slice(0, this.textWordCount - 1)
+
+      return textWithoutLastWord.join(' ')
     },
     textLastWord: function () {
-      return this.text.substr(this.text.lastIndexOf(' '))
+      return this.textArray[this.textWordCount - 1]
     },
     textWithoutFirstWord: function () {
-      return this.text.substr(this.text.indexOf(' '))
+      const textWithoutFirstWord = this.textArray.slice(1)
+      return textWithoutFirstWord.join(' ')
     },
     textFirstWord: function () {
-      return this.text.substr(0, this.text.indexOf(' '))
+      return this.textArray[0]
     },
     iconProps: function () {
       return {
@@ -58,12 +71,12 @@ export default {
 <style lang="scss">
   @import "~@dpc-sdp/ripple-global/scss/settings";
 
-  $rpl-text-link-before-margin: auto $rpl-space-2 auto auto !default;
-  $rpl-text-link-after-margin: auto auto auto $rpl-space-2 !default;
+  $rpl-text-link-before-margin: auto $rpl-space auto auto !default;
+  $rpl-text-link-after-margin: auto auto auto $rpl-space !default;
 
   .rpl-text-icon {
     &__group {
-      white-space: nowrap;
+      white-space: normal;
     }
 
     &--before {
